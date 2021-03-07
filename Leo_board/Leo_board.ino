@@ -1,8 +1,4 @@
 #include <LEDMatrixDriver.hpp>
-
-// This sketch draw marquee text on your LED matrix using the hardware SPI driver Library by Bartosz Bielawski.
-// Example written 16.06.2017 by Marko Oette, www.oette.info 
-
 // Define the ChipSelect pin for the led matrix (Dont use the SS or MISO pin of your Arduino!)
 // Other pins are arduino specific SPI pins (MOSI=DIN of the LEDMatrix and CLK) see https://www.arduino.cc/en/Reference/SPI
 const uint8_t LEDMATRIX_CS_PIN = 9;
@@ -19,9 +15,9 @@ int sprt = 0;
 LEDMatrixDriver lmd(LEDMATRIX_SEGMENTS, LEDMATRIX_CS_PIN);
 
 void setup() {
-  // init the display
+  // initialize the display
   lmd.setEnabled(true);
-  lmd.setIntensity(2);   // 0 = low, 10 = high
+  lmd.setIntensity(10);   // 0 = low, 10 = high
   Serial.begin(9600);
 }
 
@@ -98,7 +94,10 @@ const int ANIM_DELAY =80;
 char text[] = "LEO";
 int len = strlen(text);
 
-//-----------------------
+char text2[] = "ISLA";
+int len2 =strlen(text2);
+
+//-----------------------  running sprite
 byte a[8]={ B00011000,
             B00100100,
             B00100100,
@@ -178,6 +177,61 @@ if (x ==31){
 }
 }
 //------------------
+ while(sprt==0){
+  drawSprite( (byte*)&a, x2++, 0, 8, 8 );
+  lmd.display();
+  delay(ANIM_DELAY2);
+
+  lmd.clear();
+  drawSprite( (byte*)&b, x2++, 0, 8, 8 );
+  lmd.display();
+  delay(ANIM_DELAY2);
+
+  lmd.clear();
+  drawSprite( (byte*)&c, x2++, 0, 8, 8 );
+  lmd.display();
+  delay(ANIM_DELAY2);
+
+  lmd.clear();
+  drawSprite( (byte*)&d, x2++, 0, 8, 8 );
+  lmd.display();
+  delay(ANIM_DELAY2);
+
+  lmd.clear();
+  drawSprite( (byte*)&e, x2++, 0, 8, 8 );
+  lmd.display();
+  delay(ANIM_DELAY2);
+
+  lmd.clear();
+  drawSprite( (byte*)&f, x2++, 0, 8, 8 );
+  lmd.display();
+  delay(ANIM_DELAY2);
+
+  if( x2 > LEDMATRIX_WIDTH )
+    x2= -1;
+Serial.println(x2); 
+if (x2 ==29){
+  sprt=1;
+  marq=0;
+  x2=31;
+}
+ }   
+ while(marq==0){
+  // ----------Draw the text to the current position
+ drawString(text2, len2, x, 0);
+   // In case you wonder why we don't have to call lmd.clear() in every loop: The font has a opaque (black) background...
+ // Toggle display of the new framebuffer
+ lmd.display();
+ // Wait to let the human read the display
+ delay(ANIM_DELAY);
+ // Advance to next coordinate
+ if( --x < len2 * -8 )
+   x = LEDMATRIX_WIDTH;
+if (x ==31){
+  marq=1;
+  sprt=0;
+}
+}
  while(sprt==0){
   drawSprite( (byte*)&a, x2++, 0, 8, 8 );
   lmd.display();
